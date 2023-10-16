@@ -113,6 +113,7 @@ void PlayWindow::InitColorPicker()
 				if (!isSelectColorInit)
 				{
 					colorPicker[colorIdx]->setStyleSheet(colorPicker[colorIdx]->styleSheet() + QString("border: 3px solid %1;").arg(caseColorPickerBorder.ToHex()));
+					selectedColorIdx = colorIdx;
 					isSelectColorInit = true;
 				}
 			}
@@ -240,7 +241,7 @@ void PlayWindow::ShowSolution()
 {
 	for (uint row = 0; row < picross.GetHeight(); ++row)
 	{
-		for (uint col = 0; col < picross.GetHeight(); ++col)
+		for (uint col = 0; col < picross.GetWidth(); ++col)
 		{
 			SetBtnStyle(row, col, picross.GetExpectedColor(row, col));
 			picross.GetBtn(row, col)->setDisabled(true);

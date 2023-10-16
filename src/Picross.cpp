@@ -136,12 +136,12 @@ bool Picross::IsColorNecessary(const uchar idxColor) const
 
 void Picross::GenerateClues()
 {
-	auto FillClueLine = [&](const LineOrientation dir, const uchar idx)
+	auto FillClueLine = [&](const LineOrientation dir, const uint idx)
 	{
 		Clue currentClue;
 		State lastState = State::unchecked;
 		Color lastColor = (dir == LineOrientation::row) ? GetExpectedColor(idx, 0) : GetExpectedColor(0, idx);;
-		uint lineLimit = (dir == LineOrientation::row) ? height : width;
+		uint lineLimit = (dir == LineOrientation::row) ? width : height;
 		uint insertIdx = (dir == LineOrientation::row) ? idx : height + idx;
 
 		for (uint i = 0; i < lineLimit; ++i)
@@ -177,13 +177,13 @@ void Picross::GenerateClues()
 	clues.resize(width + height);
 
 	// Rows
-	for (uint row = 0; row < width; ++row)
+	for (uint row = 0; row < height; ++row)
 	{
 		FillClueLine(LineOrientation::row, row);
 	}
 
 	// Columns
-	for (uint col = 0; col < height; ++col)
+	for (uint col = 0; col < width; ++col)
 	{
 		FillClueLine(LineOrientation::column, col);
 	}
@@ -191,7 +191,7 @@ void Picross::GenerateClues()
 
 ClueLine Picross::GetClueLine(const LineOrientation dir, const uint idx) const
 {
-	return dir == LineOrientation::row ? clues[idx] : clues[width + idx];
+	return dir == LineOrientation::row ? clues[idx] : clues[height + idx];
 }
 
 QLabel * Picross::GenerateClueLabel(const LineOrientation dir, const int idx)

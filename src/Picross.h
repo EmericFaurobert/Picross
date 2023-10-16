@@ -60,8 +60,8 @@ public:
 	bool IsCorrect();
 
 private:
-	uchar LastRow() const { return height - 1; }
-	uchar LastCol() const { return width - 1; }
+	uint LastRow() const { return height - 1; }
+	uint LastCol() const { return width - 1; }
 
 	uint GetIndex(const uint row, const uint col) const { return row * width + col; }
 	Case & GetCase(const uint row, const uint col) { return grid[GetIndex(row, col)]; }
