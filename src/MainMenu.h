@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include "PlayWindow.h"
+#include "GridPreSelectWindow.h"
 
 class MainMenu : public QWidget
 {

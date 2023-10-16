@@ -7,7 +7,7 @@ MainMenu::MainMenu()
 {
 	setFixedSize(300, 150);
 
-	// Boutons
+	// Buttons
 	playButton = new QPushButton("Jouer");
 	loadButton = new QPushButton("Charger");
 	editButton = new QPushButton("Creer");
@@ -33,8 +33,8 @@ void MainMenu::OnPlay()
 {
 	this->close();
 
-	PlayWindow *grid = new PlayWindow(Picross("resources\\Picross\\TestColored.pix"));
-	grid->show();
+	GridPreSelectWindow* gridSelector = new GridPreSelectWindow();
+	gridSelector->show();
 }
 
 void MainMenu::OnLoad() 
@@ -42,8 +42,9 @@ void MainMenu::OnLoad()
 	QString fileName = QFileDialog::getOpenFileName(this, "Open Picross", "resources\\Picross", "Picross File (*.pix)");
 	if (!fileName.isEmpty())
 	{
-		PlayWindow* grid = new PlayWindow(Picross(fileName.toUtf8().constData()));
 		this->close();
+
+		PlayWindow* grid = new PlayWindow(Picross(fileName.toUtf8().constData()));
 		grid->show();
 	}
 }
