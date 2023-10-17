@@ -53,9 +53,9 @@ void PlayWindow::InitLayouts()
 
 void PlayWindow::InitGrid()
 {
-	for (uchar row = 0; row < picross.GetHeight(); ++row)
+	for (uint row = 0; row < picross.GetHeight(); ++row)
 	{
-		for (uchar col = 0; col < picross.GetWidth(); ++col)
+		for (uint col = 0; col < picross.GetWidth(); ++col)
 		{
 			QRightClickableButton *btn = new QRightClickableButton();
 			btn->setFixedSize(QSize(30, 30));
@@ -91,33 +91,37 @@ void PlayWindow::InitClues()
 
 void PlayWindow::InitColorPicker()
 {
-	if (picross.IsColored())
+	ColorPalette colPal = picross.GetColorPalette();
+	bool isSelectColorInit = false;
+
+	for (ColorPalette::const_iterator it = colPal.begin(); it != colPal.end(); ++it)
 	{
-		ColorPalette colPal = picross.GetColorPalette();
-		bool isSelectColorInit = false;
+		uchar colorIdx = it->first;
 
-		for (ColorPalette::const_iterator it = colPal.begin(); it != colPal.end(); ++it)
+		if (picross.IsColorNecessary(colorIdx))
 		{
-			uchar colorIdx = it->first;
-
-			if (picross.IsColorNecessary(colorIdx))
+			if (!isSelectColorInit)
 			{
-				QPushButton *btn = new QPushButton();
+				selectedColorIdx = colorIdx;
+				isSelectColorInit = true;
+			}
+
+			if (picross.IsColored())
+			{
+				QPushButton* btn = new QPushButton();
 				colorPicker[colorIdx] = btn;
 				rightLayout->addWidget(btn);
 
 				btn->setFixedSize(QSize(40, 40));
 				btn->setStyleSheet(QString("background-color: %1;").arg(it->second.ToRgb()));
 				QObject::connect(btn, &QPushButton::clicked, [this, colorIdx] { ChangeCurrentColor(colorIdx); });
-
-				if (!isSelectColorInit)
-				{
-					colorPicker[colorIdx]->setStyleSheet(colorPicker[colorIdx]->styleSheet() + QString("border: 3px solid %1;").arg(caseColorPickerBorder.ToHex()));
-					selectedColorIdx = colorIdx;
-					isSelectColorInit = true;
-				}
 			}
 		}
+	}
+
+	if (picross.IsColored())
+	{
+		colorPicker[selectedColorIdx]->setStyleSheet(colorPicker[selectedColorIdx]->styleSheet() + QString("border: 3px solid %1;").arg(caseColorPickerBorder.ToHex()));
 	}
 }
 

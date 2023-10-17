@@ -1,0 +1,39 @@
+Width 16
+Height 12
+Colored yes
+
+ColorPalette: 6
+0: 255 255 255
+1: 0 0 0
+2: 0 188 212
+3: 33 150 243
+4: 63 81 181
+5: 255 152 0
+
+StateGrid:
+----XX----------
+---XXXX---------
+---XXXX---------
+---XXXXX--------
+--XXXXXXXXX-----
+-XXXXXXXXXXXX---
+XXXXXXXXXXXXXXX-
+XXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXX
+-XXXXXXXXXXXXXX-
+--XXXXXXXXXXX---
+----XXXXXX------
+
+ColorGrid:
+0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0
+0 0 0 1 2 3 1 0 0 0 0 0 0 0 0 0
+0 0 0 1 3 3 4 0 0 0 0 0 0 0 0 0
+0 0 0 1 5 5 5 1 0 0 0 0 0 0 0 0
+0 0 1 3 3 3 3 3 4 1 1 0 0 0 0 0
+0 1 3 2 2 3 3 3 3 3 3 4 1 0 0 0
+1 3 3 0 0 0 2 2 2 1 3 3 3 4 1 0
+1 3 1 3 1 3 3 3 3 3 3 1 3 3 3 1
+1 3 3 3 3 1 3 1 3 3 3 3 3 3 4 1
+0 1 4 3 3 3 3 3 3 3 3 3 4 1 1 0
+0 0 1 1 4 3 3 3 3 4 1 1 1 0 0 0
+0 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0
