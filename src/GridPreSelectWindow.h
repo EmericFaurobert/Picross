@@ -12,6 +12,7 @@ public:
 private:
 	void OnPreLoad(const QString& selectedDifficulty);
 
+private:
 	QVBoxLayout* buttonsLayout { nullptr };
 	QPushButton* easyGridsButton { nullptr };
 	QPushButton* mediumGridsButton { nullptr };

@@ -20,12 +20,12 @@ PlayWindow::PlayWindow(const Picross & picx) : picross(picx)
 
 void PlayWindow::InitLayouts()
 {
-	// The chrono layout
+	// The left chrono layout
 	leftLayout = new QVBoxLayout();
 	leftLayout->setAlignment(Qt::AlignCenter);
 	leftLayout->setContentsMargins(10, 0, 30, 0);
 
-	// The picross layout
+	// The middle picross layout
 	gridLayout = new QGridLayout();
 	gridLayout->setSpacing(0);
 	centralWidget = new QWidget();
@@ -35,13 +35,13 @@ void PlayWindow::InitLayouts()
 	spRetain.setRetainSizeWhenHidden(true);
 	centralWidget->setSizePolicy(spRetain);
 
-	// The color picker layout
+	// The right color picker layout
 	rightLayout = new QVBoxLayout();
 	rightLayout->setAlignment(Qt::AlignCenter);
 	rightLayout->setContentsMargins(30, 0, 10, 0);
 	rightLayout->setSpacing(10);
 
-	// The main layout which contains all others
+	// The main layout (which contains all others)
 	mainLayout = new QHBoxLayout();
 	mainLayout->setAlignment(Qt::AlignCenter);
 	mainLayout->addLayout(leftLayout);
@@ -98,14 +98,17 @@ void PlayWindow::InitColorPicker()
 	{
 		uchar colorIdx = it->first;
 
+		// Check if color is used for grid completion (or only for display)
 		if (picross.IsColorNecessary(colorIdx))
 		{
+			// Set up the initial selected color
 			if (!isSelectColorInit)
 			{
 				selectedColorIdx = colorIdx;
 				isSelectColorInit = true;
 			}
 
+			// Creation of the color picker GUI
 			if (picross.IsColored())
 			{
 				QPushButton* btn = new QPushButton();
@@ -119,6 +122,7 @@ void PlayWindow::InitColorPicker()
 		}
 	}
 
+	// Selected color GUI highlight
 	if (picross.IsColored())
 	{
 		colorPicker[selectedColorIdx]->setStyleSheet(colorPicker[selectedColorIdx]->styleSheet() + QString("border: 3px solid %1;").arg(caseColorPickerBorder.ToHex()));
@@ -170,32 +174,27 @@ void PlayWindow::SetBtnStyle(const uint row, const uint col, const Color &color)
 	QRightClickableButton *btn = picross.GetBtn(row, col);
 	btn->setIcon(QIcon());		// Clean cross icons
 
+	// Thicken borders every 5 rows/colums
 	uint hThickness = (row != 0 && row % 5 == 0) ? 2 : 1;
 	uint vThickness = (col != 0 && col % 5 == 0) ? 2 : 1;
 
 	QString strBorderColor = Color(128, 128, 128).ToRgb();
 
-	// Common properties
+	// Common properties (background color + top & left borders)
 	QString css = QString("background-color: %1;").arg(color.ToRgb()) +
 		QString("border-top: %1px solid %2;").arg(hThickness).arg(strBorderColor) +
 		QString("border-left: %1px solid %2;").arg(vThickness).arg(strBorderColor);
 
-	if (row < picross.GetHeight() - 1 && col < picross.GetWidth() - 1) // Default case
+	if (row == picross.GetHeight() - 1)	// Last row (adding bottom border)
 	{
-		btn->setStyleSheet(css);
+		css += QString("border-bottom: 1px solid %1;").arg(strBorderColor);
 	}
-	else if (row == picross.GetHeight() - 1 && col < picross.GetWidth() - 1)	// Last row
+	if (col == picross.GetWidth() - 1)	// Last column (adding right border)
 	{
-		btn->setStyleSheet(css + QString("border-bottom: 1px solid %1;").arg(strBorderColor));
+		css += QString("border-right: 1px solid %1;").arg(strBorderColor);
 	}
-	else if (row < picross.GetHeight() - 1 && col == picross.GetWidth() - 1)	// Last column
-	{
-		btn->setStyleSheet(css + QString("border-right: 1px solid %1;").arg(strBorderColor));
-	}
-	else // Last case (last row & last column)
-	{
-		btn->setStyleSheet(QString("border: 1px solid %1; background-color: %2;").arg(strBorderColor).arg(color.ToRgb()));
-	}
+
+	btn->setStyleSheet(css);
 }
 
 void PlayWindow::SetBtnBackground(const uint row, const uint col, const QString & imgPath)
@@ -209,20 +208,20 @@ void PlayWindow::SetBtnBackground(const uint row, const uint col, const QString 
 
 void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButton click)
 {
-	if (click == Qt::LeftButton)
+	if (click == Qt::LeftButton)		// Case colorization
 	{
 		picross.SetCurrentState(row, col, State::checked);
 		picross.SetCurrentColor(row, col, selectedColorIdx);
 		SetBtnStyle(row, col, picross.GetColor(selectedColorIdx));
 	}
-	else if(click == Qt::RightButton)
+	else if(click == Qt::RightButton)	// Mark as empty case
 	{
 		picross.SetCurrentState(row, col, State::unchecked);
 		SetBtnStyle(row, col, defaultGridCaseColor);
 		SetBtnBackground(row, col, "resources/Icons/BlackCross.svg");
 	}
 
-	if (picross.IsCorrect())
+	if (picross.IsCorrect())	// Check if corresponds to solution
 	{
 		timer->stop();
 		pauseButton->setDisabled(true);

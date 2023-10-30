@@ -11,6 +11,7 @@ class MainMenu : public QWidget
 public:
 	MainMenu();
 
+private:
 	void OnPlay();
 	void OnLoad();
 	void OnEdit();

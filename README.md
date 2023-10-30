@@ -16,3 +16,12 @@ This project is developped in C++11 (with an high focus on object oriented progr
 ## Screenshots
 
 ![Screenshot](PicrossScreenshot.png)
+
+## Roadmap
+
+- Store/Read best times per picross
+- Rework the GUI (add back buttons + screen adaptive)
+- Add french translation
+- Create an interactive tutorial
+- Implement the grids editor
+- Add more grids

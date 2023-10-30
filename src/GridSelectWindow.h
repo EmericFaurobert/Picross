@@ -12,6 +12,7 @@ public:
 private:
 	void OnLoad(const QString & gridName);
 
+private:
 	QVBoxLayout *pGridsLayout { nullptr };
 	QTableWidget *pGridsTable { nullptr };
 	QString gridsFolderPath = "";

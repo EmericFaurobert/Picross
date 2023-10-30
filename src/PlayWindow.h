@@ -28,7 +28,6 @@ private:
 	void ChangeCurrentColor(const uchar newColor);
 	void ShowSolution();
 
-
 private:
 	Picross picross;
 	

@@ -4,11 +4,13 @@
 
 Picross::Picross(const std::string & fileName)
 {
-	auto trimStr = [](std::string & str)
+	// Lambda to trim both ends of a string
+	auto trimStr = [](std::string & str)	
 	{
 		str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
 	};
 
+	// Lambda to parse "name: value" strings
 	auto readCorrespondingValue = [&trimStr](std::ifstream & fileStream, const std::string & searchedStr, std::string & foundLine)
 	{
 		// Reset the stream
@@ -38,7 +40,7 @@ Picross::Picross(const std::string & fileName)
 	{
 		std::string readVal = "";
 
-		// Grid Size
+		// Grid size
 		if (readCorrespondingValue(inFile, "Width", readVal))
 			width = std::min(std::stoi(readVal), UCHAR_MAX);
 
@@ -49,7 +51,7 @@ Picross::Picross(const std::string & fileName)
 
 		assert(("Picross size is larger than 20x20", width <= 20 || height <= 20));	// We don't handle larger than 20x20 grids
 
-		// StateGrid
+		// Grid states
 		if (readCorrespondingValue(inFile, "StateGrid", readVal))
 		{
 			char tempChr = ' ';
@@ -65,7 +67,7 @@ Picross::Picross(const std::string & fileName)
 			}
 		}
 
-		// Colors
+		// Multi colored Picross
 		if (readCorrespondingValue(inFile, "Colored", readVal))
 			isColored = (readVal == "yes" || readVal == "true") ? true : false;
 
@@ -81,7 +83,7 @@ Picross::Picross(const std::string & fileName)
 				colorPalette[idx] = Color(red, green, blue);
 			}
 
-			// ColorGrid
+			// Grid colors
 			if (readCorrespondingValue(inFile, "ColorGrid", readVal))
 			{
 				uint colorIdx = 0;
@@ -176,13 +178,13 @@ void Picross::GenerateClues()
 
 	clues.resize(width + height);
 
-	// Rows
+	// Fill rows clues
 	for (uint row = 0; row < height; ++row)
 	{
 		FillClueLine(LineOrientation::row, row);
 	}
 
-	// Columns
+	// Fill columns clues
 	for (uint col = 0; col < width; ++col)
 	{
 		FillClueLine(LineOrientation::column, col);
@@ -199,18 +201,23 @@ QLabel * Picross::GenerateClueLabel(const LineOrientation dir, const int idx)
 	const ClueLine clueLine = GetClueLine(dir, idx);
 
 	QString str = "";
-	const QString separator = (dir == LineOrientation::row) ? " " : "<br>";
+	const QString separator = (dir == LineOrientation::row) ? " " : "<br>";	// Adapting string separator to row/column
 
 	for (uint i = 0; i < clueLine.size(); ++i)
 	{
+		// Genrate the corresponding string
 		const QString clueColor = isColored ? clueLine[i].color.ToHex() : defaultCluesLabelColor.ToHex();
-		int clueValue = std::max(clueLine[i].Length(), 0);	// We handle empty clues
+		int clueValue = std::max(clueLine[i].Length(), 0);	// To handle empty clues
 		str += QString("<font color='%1'>").arg(clueColor) + QString::number(clueValue) + "</font>";
-		if(i < clueLine.size() - 1)
+
+		// Only add seperator if not the last clue
+		if (i < clueLine.size() - 1)
+		{
 			str += separator;
+		}
 	}
 
-	// Generate the label
+	// Generate the QLabel
 	QLabel* clueLabel = new QLabel(str);
 	clueLabel->setStyleSheet("font: bold 15px");
 	return clueLabel;
