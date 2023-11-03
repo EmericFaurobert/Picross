@@ -1,6 +1,6 @@
-Width 8
-Height 8
-Colored yes
+Width: 8
+Height: 8
+Colored: yes
 
 ColorPalette: 6
 0: 0 0 0
@@ -18,7 +18,7 @@ XXXXXXXX
 XXXXXXXX
 XXXXXXXX
 XXXXXXXX
-XXXXXXXX 3
+XXXXXXXX
 
 ColorGrid:
 1 4 2 3 1 4 2 5
