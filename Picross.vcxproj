@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FileRead.cpp" />
     <ClCompile Include="src\GridSelectWindow.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MainMenu.cpp" />
@@ -29,6 +30,7 @@
   <ItemGroup>
     <ClInclude Include="src\Color.h" />
     <ClInclude Include="src\Constants.h" />
+    <ClInclude Include="src\FileRead.h" />
     <ClInclude Include="src\GridSelectWindow.h" />
     <ClInclude Include="src\MainMenu.h" />
     <ClInclude Include="src\Picross.h" />

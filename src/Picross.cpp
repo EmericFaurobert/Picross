@@ -1,100 +1,105 @@
 #include "Picross.h"
-#include <fstream>
-#include <iostream>
+#include "FileRead.h"
+#include <sstream>
 
 Picross::Picross(const std::string & fileName)
 {
-	// Lambda to trim both ends of a string
-	auto trimStr = [](std::string & str)	
+	FileStream file(fileName);
+	std::string nullStr = "";	// For consuming attributes with no values
+
+	// Width & Height
+	std::string widthVal = "", heightVal = "";
+	file.parseValue("Width", widthVal);
+	file.parseValue("Height", heightVal);
+
+	if (widthVal != "" && heightVal != "")
 	{
-		str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
-	};
+		width = std::min(std::stoi(widthVal), UCHAR_MAX);
+		height = std::min(std::stoi(heightVal), UCHAR_MAX);
 
-	// Lambda to parse "name: value" strings
-	auto readCorrespondingValue = [&trimStr](std::ifstream & fileStream, const std::string & searchedStr, std::string & foundLine)
+		assert(("Picross grid size is too small", width > 1 && height > 1));		// Only handling larger than 1x1 grids
+		assert(("Picross grid size is too large", width <= 25 && height <= 25));	// But not grids which exceed 25x25 !
+
+		grid.resize(size_t(width) * size_t(height));
+	}
+	else
 	{
-		// Reset the stream
-		fileStream.clear();
-		fileStream.seekg(0, fileStream.beg);
+		assert(("No grid size defined !", false));	// No grid size read
+	}
 
-		std::string readLine = "";
+	// Multi color grid
+	std::string coloredVal = "";
+	file.parseValue("Colored", coloredVal);
+	if (coloredVal == "true" || coloredVal == "yes" || coloredVal == "y")
+	{
+		isColored = true;
+	}
 
-		while (!fileStream.eof())
-		{	
-			std::getline(fileStream, readLine);
+	// ColorPalette
+	std::string nbColorsVal = "";
+	file.parseValue("ColorPalette", nbColorsVal);
+	if (nbColorsVal != "")
+	{
+		int nbColors = std::min(std::stoi(nbColorsVal), UCHAR_MAX);
+		assert(("Too much colors defined", nbColors <= 12));	// ColorPalette is too large for the GUI
 
-			if (readLine.compare(0, searchedStr.size(), searchedStr) == 0)
+		for (int i = 0; i < nbColors; ++i)
+		{
+			std::string paletteLine = "";
+			if (file.nextLine(paletteLine))
 			{
-				foundLine = readLine.substr(searchedStr.size() + 1, std::string::npos);
-				trimStr(foundLine);
-				return true;
+				std::stringstream sstream(paletteLine);
+				uint idx = 0, red = 0, green = 0, blue = 0;
+
+				sstream >> idx >> nullStr >> red >> green >> blue;
+				colorPalette[idx] = Color(red, green, blue);
 			}
 		}
+	}
 
-		return false;
-	};
-
-	std::ifstream inFile(fileName);
-
-	if (inFile.is_open())
+	// States grid
+	if (file.parseValue("StateGrid", nullStr))
 	{
-		std::string readVal = "";
+		std::string statesLine = "";
 
-		// Grid size
-		if (readCorrespondingValue(inFile, "Width", readVal))
-			width = std::min(std::stoi(readVal), UCHAR_MAX);
-
-		if (readCorrespondingValue(inFile, "Height", readVal))
-			height = std::min(std::stoi(readVal), UCHAR_MAX);
-
-		grid.resize(width * height);
-
-		assert(("Picross size is larger than 20x20", width <= 20 || height <= 20));	// We don't handle larger than 20x20 grids
-
-		// Grid states
-		if (readCorrespondingValue(inFile, "StateGrid", readVal))
+		for (uint row = 0; row < height; ++row)
 		{
-			char tempChr = ' ';
-
-			for (uint row = 0; row < height; ++row)
+			if (file.nextLine(statesLine) && statesLine != "")
 			{
 				for (uint col = 0; col < width; ++col)
 				{
-					inFile >> tempChr;
-					if (tempChr == 'X')
-						SetExpectedState(row, col, State::checked);
+					if (statesLine.size() >= width)
+					{
+						if (statesLine[col] == 'X' || statesLine[col] == 'x')
+							SetExpectedState(row, col, State::checked);
+					}
+					else
+						assert(("Missing columns state !", false));	// Not enough columns states read
 				}
 			}
+			else
+				assert(("Missing rows state !", false));	// Not enough rows states read
 		}
+	}
+	else
+		assert(("No grid states found !", false));	// No grid states read
 
-		// Multi colored Picross
-		if (readCorrespondingValue(inFile, "Colored", readVal))
-			isColored = (readVal == "yes" || readVal == "true") ? true : false;
+	// Color grid
+	if (file.parseValue("ColorGrid", nullStr))
+	{
+		std::string colorsLine = "";
 
-		// ColorPalette
-		if (readCorrespondingValue(inFile, "ColorPalette", readVal))
+		for (uint row = 0; row < height; ++row)
 		{
-			std::string tempStr = "";
-			uint idx = 0, red = 0, green = 0, blue = 0;
-
-			for (uint i = 0; i < std::stoi(readVal); ++i)
+			if (file.nextLine(colorsLine))
 			{
-				inFile >> idx >> tempStr >> red >> green >> blue;
-				colorPalette[idx] = Color(red, green, blue);
-			}
+				std::stringstream sstream(colorsLine);
 
-			// Grid colors
-			if (readCorrespondingValue(inFile, "ColorGrid", readVal))
-			{
-				uint colorIdx = 0;
-
-				for (uint row = 0; row < height; ++row)
+				for (uint col = 0; col < width; ++col)
 				{
-					for (uint col = 0; col < width; ++col)
-					{
-						inFile >> colorIdx;
-						SetExpectedColor(row, col, colorIdx);
-					}
+					uint colorIdx = 0;
+					sstream >> colorIdx;
+					SetExpectedColor(row, col, colorIdx);
 				}
 			}
 		}
@@ -176,7 +181,7 @@ void Picross::GenerateClues()
 			clues[insertIdx].push_back(currentClue);
 	};
 
-	clues.resize(width + height);
+	clues.resize(size_t(width) + size_t(height));
 
 	// Fill rows clues
 	for (uint row = 0; row < height; ++row)
@@ -193,7 +198,7 @@ void Picross::GenerateClues()
 
 ClueLine Picross::GetClueLine(const LineOrientation dir, const uint idx) const
 {
-	return dir == LineOrientation::row ? clues[idx] : clues[height + idx];
+	return dir == LineOrientation::row ? clues[idx] : clues[size_t(height) + size_t(idx)];
 }
 
 QLabel * Picross::GenerateClueLabel(const LineOrientation dir, const int idx)
@@ -212,9 +217,7 @@ QLabel * Picross::GenerateClueLabel(const LineOrientation dir, const int idx)
 
 		// Only add seperator if not the last clue
 		if (i < clueLine.size() - 1)
-		{
 			str += separator;
-		}
 	}
 
 	// Generate the QLabel
