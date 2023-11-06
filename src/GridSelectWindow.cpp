@@ -4,7 +4,7 @@
 
 GridSelectWindow::GridSelectWindow(const QString & folderName)
 {
-	gridsFolderPath = "resources\\Picross\\" + folderName;
+	gridsFolderPath = picrossesFolder + folderName;
 
 	// ListView
 	pGridsTable = new QTableWidget();

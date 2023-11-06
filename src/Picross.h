@@ -27,7 +27,7 @@ struct Clue
 	int startIdx = 1;
 	int endIdx = -1;
 
-	int Length() const { return endIdx - startIdx + 1; }
+	inline int Length() const { return endIdx - startIdx + 1; }
 };
 
 using ClueLine = std::vector<Clue>;				// All the clues for a given row/column
@@ -39,9 +39,9 @@ class Picross
 public:
 	Picross(const std::string & fileName);
 
-	uint GetWidth() const { return width; }			// Return the Picross width
-	uint GetHeight() const { return height; }		// Return the Picross height
-	bool IsColored() const { return isColored; }	// Return if Picross uses multiple colors
+	inline uint GetWidth() const { return width; }			// Return the Picross width
+	inline uint GetHeight() const { return height; }		// Return the Picross height
+	inline bool IsColored() const { return isColored; }		// Return if Picross uses multiple colors
 
 	void SetCurrentState(const uint row, const uint col, const State sol) { GetCase(row, col).currentState = sol; }
 	void SetCurrentColor(const uint row, const uint col, const uchar colorIdx) { GetCase(row, col).currentColorIdx = colorIdx; }
@@ -51,7 +51,7 @@ public:
 
 	QLabel* GenerateClueLabel(const LineOrientation dir, const int idx);	
 
-	const ColorPalette& GetColorPalette() const { return colorPalette; }
+	inline const ColorPalette& GetColorPalette() const { return colorPalette; }
 	Color GetColor(uchar colorIdx) const;
 	Color GetExpectedColor(const uint row, const uint col) const;
 	bool IsColorNecessary(const uchar idxColor) const;
@@ -59,10 +59,10 @@ public:
 	bool IsCorrect();
 
 private:
-	uint LastRow() const { return height - 1; }	// Return last row index
-	uint LastCol() const { return width - 1; }	// Return last column index
+	inline uint LastRow() const { return height - 1; }	// Return last row index
+	inline uint LastCol() const { return width - 1; }	// Return last column index
 
-	uint GetIndex(const uint row, const uint col) const { return row * width + col; }
+	inline uint GetIndex(const uint row, const uint col) const { return row * width + col; }
 	Case& GetCase(const uint row, const uint col) { return grid[GetIndex(row, col)]; }
 	const Case& GetCase(const uint row, const uint col) const { return grid[GetIndex(row, col)]; }
 
@@ -83,7 +83,7 @@ private:
 	uint height { 5 };
 	bool isColored { false };
 	ColorPalette colorPalette = { { 0, CustomColor::black } };
-	std::vector<Case> grid { width * height };
-	std::vector<ClueLine> clues { width + height };
+	std::vector<Case> grid { size_t(width) * size_t(height) };
+	std::vector<ClueLine> clues { size_t(width) + size_t(height) };
 };
 
