@@ -19,9 +19,11 @@ This project is developped in C++11 (with an high focus on object oriented progr
 
 ## Roadmap
 
-- Store/Read best times per picross
-- Rework the GUI (add back buttons + screen adaptive)
-- Add french translation
+~~- Store/Read best times per picross~~
+- Add back buttons to the GUI
+- Adding a french translation
+- Write scores into binary mode
+- Make GUI more adaptive to screens
 - Create an interactive tutorial
 - Implement the grids editor
-- Add more grids
+- Add even more grids

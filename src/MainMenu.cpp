@@ -1,4 +1,7 @@
 #include "MainMenu.h"
+#include "FileReadWrite.h"
+#include "Constants.h"
+
 #include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -39,12 +42,18 @@ void MainMenu::OnPlay()
 
 void MainMenu::OnLoad() 
 {
-	QString fileName = QFileDialog::getOpenFileName(this, "Open Picross", "resources\\Picross", "Picross File (*.pix)");
+	const QString fileName = QFileDialog::getOpenFileName(this, "Open Picross", QString::fromStdString(pixsFolder), "Picross File (*.pix)");
 	if (!fileName.isEmpty())
 	{
+		std::string currentScore = "";
+		const std::string truncedFileName = TruncatePicrossFileName(fileName.toStdString());
+
+		FileStream scoresStream(pixsFolder + scoresFileName, std::fstream::in);
+		scoresStream.parseValue(truncedFileName, currentScore);
+
 		this->close();
 
-		PlayWindow* grid = new PlayWindow(Picross(fileName.toUtf8().constData()));
+		PlayWindow* grid = new PlayWindow(Picross(fileName.toStdString(), currentScore));
 		grid->show();
 	}
 }

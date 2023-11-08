@@ -42,7 +42,7 @@
     <ClCompile Include="src\GridSelectWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\FileRead.cpp">
+    <ClCompile Include="src\FileReadWrite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,7 +68,7 @@
     <ClInclude Include="src\GridSelectWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\FileRead.h">
+    <ClInclude Include="src\FileReadWrite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

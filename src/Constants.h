@@ -3,8 +3,9 @@
 #include "Color.h"
 
 // Paths
-const QString picrossesFolder= "resources\\Picross\\";
-const QString scoresFolder = "resources\\";
+const std::string pixsFolder= "resources/Picross/";
+const std::string pixsExtension = ".pix";
+const std::string scoresFileName = "scores.txt";
 
 // Colors
 const Color defaultGridCaseColor(224, 224, 224);	// Grid background color

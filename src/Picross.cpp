@@ -1,11 +1,26 @@
 #include "Picross.h"
-#include "FileRead.h"
+#include "FileReadWrite.h"
+#include "Constants.h"
 #include <sstream>
 
-Picross::Picross(const std::string & fileName)
+
+std::string TruncatePicrossFileName(const std::string& str) {
+	size_t startOffset = str.find(pixsFolder) + pixsFolder.size();
+	return str.substr(startOffset, str.size() - startOffset - pixsExtension.size());
+}
+
+
+Picross::Picross(const std::string & filePath, const std::string & score)
 {
-	FileStream file(fileName);
-	std::string nullStr = "";	// For consuming attributes with no values
+	// Picross Path
+	pixFilePath = filePath;
+
+	// Best score
+	bestScore = score;
+
+	// Starting .pix file read...
+	FileStream file(filePath);
+	std::string strDump = "";	// For consuming attributes with no values
 
 	// Width & Height
 	std::string widthVal = "", heightVal = "";
@@ -46,25 +61,25 @@ Picross::Picross(const std::string & fileName)
 		for (int i = 0; i < nbColors; ++i)
 		{
 			std::string paletteLine = "";
-			if (file.nextLine(paletteLine))
+			if (file.readNextLine(paletteLine))
 			{
 				std::stringstream sstream(paletteLine);
 				uint idx = 0, red = 0, green = 0, blue = 0;
 
-				sstream >> idx >> nullStr >> red >> green >> blue;
+				sstream >> idx >> strDump >> red >> green >> blue;
 				colorPalette[idx] = Color(red, green, blue);
 			}
 		}
 	}
 
 	// States grid
-	if (file.parseValue("StateGrid", nullStr))
+	if (file.parseValue("StateGrid", strDump))
 	{
 		std::string statesLine = "";
 
 		for (uint row = 0; row < height; ++row)
 		{
-			if (file.nextLine(statesLine) && statesLine != "")
+			if (file.readNextLine(statesLine) && statesLine != "")
 			{
 				for (uint col = 0; col < width; ++col)
 				{
@@ -85,13 +100,13 @@ Picross::Picross(const std::string & fileName)
 		assert(("No grid states found !", false));	// No grid states read
 
 	// Color grid
-	if (file.parseValue("ColorGrid", nullStr))
+	if (file.parseValue("ColorGrid", strDump))
 	{
 		std::string colorsLine = "";
 
 		for (uint row = 0; row < height; ++row)
 		{
-			if (file.nextLine(colorsLine))
+			if (file.readNextLine(colorsLine))
 			{
 				std::stringstream sstream(colorsLine);
 

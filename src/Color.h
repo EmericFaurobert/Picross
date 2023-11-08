@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QColor>
+
 using uchar = unsigned char;
 
 enum class CustomColor : char { white, gray, black, red, green, blue };

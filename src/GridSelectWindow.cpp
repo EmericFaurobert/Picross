@@ -1,10 +1,11 @@
 #include <QHeaderView>
 #include <QDir>
 #include "GridSelectWindow.h"
+#include "FileReadWrite.h"
 
 GridSelectWindow::GridSelectWindow(const QString & folderName)
 {
-	gridsFolderPath = picrossesFolder + folderName;
+	gridsFolderPath = QString::fromStdString(pixsFolder) + folderName;
 
 	// ListView
 	pGridsTable = new QTableWidget();
@@ -15,13 +16,30 @@ GridSelectWindow::GridSelectWindow(const QString & folderName)
 	pGridsTable->setEditTriggers(QTableWidget::NoEditTriggers);
 
 	// Read grids
-	QDir directory(gridsFolderPath);
-	QStringList gridsName = directory.entryList(QStringList() << "*.pix" << "*.PIX" , QDir::Files);
+	const QDir directory(gridsFolderPath);
+	const QStringList gridsName = directory.entryList(QStringList() << "*.pix" << "*.PIX" , QDir::Files);
 	pGridsTable->setRowCount(gridsName.size());
 	for (int i = 0; i < gridsName.size(); ++i)
 	{
-		pGridsTable->setItem(i, 0, new QTableWidgetItem(gridsName[i]));
-		pGridsTable->setItem(i, 1, new QTableWidgetItem("00:00:00"));
+		// Name
+		QString gridName = gridsName[i].section('.', 0, 0);
+		pGridsTable->setItem(i, 0, new QTableWidgetItem(gridName));
+
+		// Best score
+		const std::string  scoresFilePath = pixsFolder + scoresFileName;
+		FileStream scoresStream(scoresFilePath, std::fstream::in);
+
+		std::string currentScore = "";
+		std::string fileName = folderName.toStdString() + "/" + gridName.toStdString();
+
+		if (scoresStream.parseValue(fileName, currentScore))
+		{
+			pGridsTable->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(currentScore)));
+		}
+		else
+		{
+			pGridsTable->setItem(i, 1, new QTableWidgetItem(""));
+		}
 	}
 
 	// Layouts
@@ -31,16 +49,16 @@ GridSelectWindow::GridSelectWindow(const QString & folderName)
 	setLayout(pGridsLayout);
 
 	// Signals / Slots
-	QObject::connect(pGridsTable, &QTableWidget::cellClicked, this, [this](int row, int col) { 
-		GridSelectWindow::OnLoad(pGridsTable->item(row, 0)->text());
+	QObject::connect(pGridsTable, &QTableWidget::cellClicked, this, [this](int row, int col) {
+		GridSelectWindow::OnLoad(pGridsTable->item(row, 0)->text(), pGridsTable->item(row, 1)->text());
 	});
 }
 
-void GridSelectWindow::OnLoad(const QString & gridName)
+void GridSelectWindow::OnLoad(const QString & gridName, const QString & gridScore)
 {
 	this->close();
 
-	std::string gridPath = QString(gridsFolderPath + "\\" + gridName).toStdString();
-	PlayWindow *grid = new PlayWindow(Picross(gridPath));
+	std::string gridPath = QString(gridsFolderPath + "/" + gridName).toStdString() + pixsExtension;
+	PlayWindow *grid = new PlayWindow(Picross(gridPath, gridScore.toStdString()));
 	grid->show();
 }

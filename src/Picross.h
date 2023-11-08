@@ -4,6 +4,7 @@
 #include <QLabel>
 #include "Color.h"
 #include "QRightClickableButton.h"
+#include "FileReadWrite.h"
 #include "Constants.h"
 
 
@@ -34,14 +35,21 @@ using ClueLine = std::vector<Clue>;				// All the clues for a given row/column
 using ColorPalette = std::map<uchar, Color>;	// Collection of colors used for a Picross
 
 
+// Return a truncated Picross filepath (without Picross folder nor extension)
+std::string TruncatePicrossFileName(const std::string & str);
+
+
 class Picross
 {
 public:
-	Picross(const std::string & fileName);
+	Picross(const std::string & filePath, const std::string & score = "");
 
-	inline uint GetWidth() const { return width; }			// Return the Picross width
-	inline uint GetHeight() const { return height; }		// Return the Picross height
-	inline bool IsColored() const { return isColored; }		// Return if Picross uses multiple colors
+	inline std::string GetFileName() const { return TruncatePicrossFileName(pixFilePath); };
+	inline std::string GetBestScore() { return bestScore; };
+
+	inline uint GetWidth() const { return width; }				// Return the Picross width
+	inline uint GetHeight() const { return height; }			// Return the Picross height
+	inline bool IsColored() const { return isColored; }			// Return if Picross uses multiple colors
 
 	void SetCurrentState(const uint row, const uint col, const State sol) { GetCase(row, col).currentState = sol; }
 	void SetCurrentColor(const uint row, const uint col, const uchar colorIdx) { GetCase(row, col).currentColorIdx = colorIdx; }
@@ -79,6 +87,8 @@ private:
 	uchar GetCurrentColorIdx(const uint row, const uint col) const { return GetCase(row, col).currentColorIdx; };
 
 private:
+	std::string pixFilePath = "";
+	std::string bestScore = "";
 	uint width { 5 };
 	uint height { 5 };
 	bool isColored { false };

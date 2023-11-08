@@ -1,5 +1,6 @@
 #include "PlayWindow.h"
 #include <QMessageBox>
+#include "FileReadWrite.h"
 #include "Constants.h"
 
 PlayWindow::PlayWindow(const Picross & picx) : picross(picx)
@@ -214,7 +215,7 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 		picross.SetCurrentColor(row, col, selectedColorIdx);
 		SetBtnStyle(row, col, picross.GetColor(selectedColorIdx));
 	}
-	else if(click == Qt::RightButton)	// Mark as empty case
+	else if (click == Qt::RightButton)	// Mark as empty case
 	{
 		picross.SetCurrentState(row, col, State::unchecked);
 		SetBtnStyle(row, col, defaultGridCaseColor);
@@ -223,8 +224,40 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 
 	if (picross.IsCorrect())	// Check if corresponds to solution
 	{
+		// Stop the chrono
 		timer->stop();
 		pauseButton->setDisabled(true);
+
+		// Writing best score...
+		const std::string  scoresFilePath = pixsFolder + scoresFileName;
+		FileStream scoresStream(scoresFilePath, std::fstream::in | std::fstream::out | std::fstream::app | std::fstream::binary);
+
+		std::string oldScore = picross.GetBestScore();
+		QTime oldTime = QTime::fromString(QString::fromStdString(oldScore), "HH:mm:ss");
+
+		if (!oldTime.isValid())
+		{
+			// Append new score at eof if not already existing
+			scoresStream.writeContent(picross.GetFileName() + ": " + chrono->toString("HH:mm:ss").toStdString() + "\n");
+		}
+		else if (*chrono < oldTime)	// Otherwise compare if new one is better	
+		{
+			std::string fileContent = "";
+
+			// Replace and rewrite all file content
+			if (scoresStream.readAllContent(fileContent))
+			{
+				std::string oldStrScore = picross.GetFileName() + ": " + oldScore;
+				std::string newStrScore = picross.GetFileName() + ": " + chrono->toString("HH:mm:ss").toStdString();
+
+				fileContent.replace(fileContent.find(oldStrScore), oldStrScore.length(), newStrScore);
+
+				FileStream newStream(scoresFilePath, std::fstream::out | std::fstream::trunc | std::fstream::binary);
+				newStream.writeContent(fileContent);
+			}
+		}
+
+		// Print congrats & Show solution
 		QMessageBox::information(this, "Fini", "Vous avez gagne !");
 		ShowSolution();
 	}	

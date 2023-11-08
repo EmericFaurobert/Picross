@@ -10,7 +10,7 @@ public:
 	GridSelectWindow(const QString & folderName);
 
 private:
-	void OnLoad(const QString & gridName);
+	void OnLoad(const QString & gridName, const QString & gridScore);
 
 private:
 	QVBoxLayout *pGridsLayout { nullptr };
