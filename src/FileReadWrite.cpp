@@ -1,7 +1,6 @@
-#include "FileReadWrite.h"
-#include <string>
 #include <sstream> 
 #include <algorithm>
+#include "FileReadWrite.h"
 
 FileStream::FileStream(const std::string & filepath, std::ios_base::openmode mode)
 {

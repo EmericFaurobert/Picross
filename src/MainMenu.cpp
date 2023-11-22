@@ -1,14 +1,12 @@
-#include "MainMenu.h"
-#include "FileReadWrite.h"
-#include "Constants.h"
-
-#include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
+#include "MainMenu.h"
 
-MainMenu::MainMenu()
+MainMenu::MainMenu(QWidget *parent) : QMainWindow(parent)
 {
-	setFixedSize(300, 150);
+	// Allocations
+	centralWidget = new QWidget(this);
+	mainLayout = new QVBoxLayout(centralWidget);
 
 	// Buttons
 	playButton = new QPushButton("Jouer");
@@ -17,13 +15,18 @@ MainMenu::MainMenu()
 	rulesButton = new QPushButton("Tuto");
 
 	// Layouts
-	mainLayout = new QVBoxLayout();
 	mainLayout->addWidget(playButton);
 	mainLayout->addWidget(loadButton);
 	mainLayout->addWidget(editButton);
 	mainLayout->addWidget(rulesButton);
 
-	setLayout(mainLayout);
+	// Central Widget
+	centralWidget->setLayout(mainLayout);
+	setCentralWidget(centralWidget);
+
+	// General Poperties
+	setAttribute(Qt::WA_DeleteOnClose, true);
+	setFixedSize(300, 150);
 
 	// Signals / Slots
 	QObject::connect(playButton, &QPushButton::clicked, this, &MainMenu::OnPlay);
@@ -34,15 +37,17 @@ MainMenu::MainMenu()
 
 void MainMenu::OnPlay()
 {
-	this->close();
-
-	GridPreSelectWindow* gridSelector = new GridPreSelectWindow();
+	GridPreSelectWindow *gridSelector = new GridPreSelectWindow(this);
+	gridSelector->setWindowModality(Qt::WindowModal);
+	gridSelector->move(this->x() + 10, this->y() + 10);
 	gridSelector->show();
 }
 
 void MainMenu::OnLoad() 
 {
+	// QFileDialog seems to be caching stuff, so it's increasing a lot the RAM consumtpion while called...
 	const QString fileName = QFileDialog::getOpenFileName(this, "Open Picross", QString::fromStdString(pixsFolder), "Picross File (*.pix)");
+
 	if (!fileName.isEmpty())
 	{
 		std::string currentScore = "";
@@ -51,10 +56,10 @@ void MainMenu::OnLoad()
 		FileStream scoresStream(pixsFolder + scoresFileName, std::fstream::in);
 		scoresStream.parseValue(truncedFileName, currentScore);
 
-		this->close();
-
-		PlayWindow* grid = new PlayWindow(Picross(fileName.toStdString(), currentScore));
+		PlayWindow* grid = new PlayWindow(nullptr, Picross(fileName.toStdString(), currentScore));
 		grid->show();
+
+		this->close();
 	}
 }
 

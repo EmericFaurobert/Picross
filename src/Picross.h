@@ -1,11 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <QLabel>
-#include "Color.h"
 #include "QRightClickableButton.h"
 #include "FileReadWrite.h"
 #include "Constants.h"
+#include "Color.h"
 
 
 enum class LineOrientation : char { row, column };
@@ -36,13 +35,13 @@ using ColorPalette = std::map<uchar, Color>;	// Collection of colors used for a 
 
 
 // Return a truncated Picross filepath (without Picross folder nor extension)
-std::string TruncatePicrossFileName(const std::string & str);
+std::string TruncatePicrossFileName(const std::string &str);
 
 
 class Picross
 {
 public:
-	Picross(const std::string & filePath, const std::string & score = "");
+	Picross(const std::string &filePath = "", const std::string& score = "");
 
 	inline std::string GetFileName() const { return TruncatePicrossFileName(pixFilePath); };
 	inline std::string GetBestScore() { return bestScore; };

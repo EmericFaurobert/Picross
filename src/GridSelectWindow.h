@@ -1,18 +1,18 @@
 #pragma once
 
-#include <QWidget>
 #include <QTableWidget>
 #include "PlayWindow.h"
 
-class GridSelectWindow : public QWidget
+class GridSelectWindow : public QMainWindow
 {
 public:
-	GridSelectWindow(const QString & folderName);
+	GridSelectWindow(QWidget *parent = nullptr, const QString &folderName = "");
 
 private:
-	void OnLoad(const QString & gridName, const QString & gridScore);
+	void OnLoad(const QString &gridName, const QString &gridScore);
 
 private:
+	QWidget* centralWidget{ nullptr };
 	QVBoxLayout *pGridsLayout { nullptr };
 	QTableWidget *pGridsTable { nullptr };
 	QString gridsFolderPath = "";

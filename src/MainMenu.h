@@ -1,15 +1,12 @@
 #pragma once
 
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QPushButton>
 #include "PlayWindow.h"
 #include "GridPreSelectWindow.h"
 
-class MainMenu : public QWidget
+class MainMenu : public QMainWindow
 {
 public:
-	MainMenu();
+	MainMenu(QWidget *parent = nullptr);
 
 private:
 	void OnPlay();
@@ -18,6 +15,7 @@ private:
 	void OnRules();
 
 private:
+	QWidget *centralWidget { nullptr };
 	QVBoxLayout *mainLayout { nullptr };
 
 	QPushButton *playButton { nullptr };

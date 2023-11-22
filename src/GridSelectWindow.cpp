@@ -1,21 +1,23 @@
 #include <QHeaderView>
 #include <QDir>
 #include "GridSelectWindow.h"
-#include "FileReadWrite.h"
 
-GridSelectWindow::GridSelectWindow(const QString & folderName)
+GridSelectWindow::GridSelectWindow(QWidget *parent, const QString &folderName) : QMainWindow(parent)
 {
-	gridsFolderPath = QString::fromStdString(pixsFolder) + folderName;
+	// Allocations
+	centralWidget = new QWidget(this);
+	pGridsLayout = new QVBoxLayout(centralWidget);
+	pGridsTable = new QTableWidget(centralWidget);
 
-	// ListView
-	pGridsTable = new QTableWidget();
+	// Table Properties
 	pGridsTable->setColumnCount(2);
 	pGridsTable->setHorizontalHeaderLabels({ "Grid", "Time"} );
 	pGridsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	pGridsTable->verticalHeader()->setVisible(false);
 	pGridsTable->setEditTriggers(QTableWidget::NoEditTriggers);
 
-	// Read grids
+	// Table Values
+	gridsFolderPath = QString::fromStdString(pixsFolder) + folderName;
 	const QDir directory(gridsFolderPath);
 	const QStringList gridsName = directory.entryList(QStringList() << "*.pix" << "*.PIX" , QDir::Files);
 	pGridsTable->setRowCount(gridsName.size());
@@ -43,10 +45,14 @@ GridSelectWindow::GridSelectWindow(const QString & folderName)
 	}
 
 	// Layouts
-	pGridsLayout = new QVBoxLayout();
 	pGridsLayout->addWidget(pGridsTable);
 
-	setLayout(pGridsLayout);
+	// Central Widget
+	centralWidget->setLayout(pGridsLayout);
+	setCentralWidget(centralWidget);
+
+	// General Poperties
+	setAttribute(Qt::WA_DeleteOnClose, true);
 
 	// Signals / Slots
 	QObject::connect(pGridsTable, &QTableWidget::cellClicked, this, [this](int row, int col) {
@@ -56,9 +62,9 @@ GridSelectWindow::GridSelectWindow(const QString & folderName)
 
 void GridSelectWindow::OnLoad(const QString & gridName, const QString & gridScore)
 {
-	this->close();
-
 	std::string gridPath = QString(gridsFolderPath + "/" + gridName).toStdString() + pixsExtension;
-	PlayWindow *grid = new PlayWindow(Picross(gridPath, gridScore.toStdString()));
+	PlayWindow *grid = new PlayWindow(nullptr, Picross(gridPath, gridScore.toStdString()));
 	grid->show();
+
+	parentWidget()->parentWidget()->close();	// Deleting MainMenu window...
 }

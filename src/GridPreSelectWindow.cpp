@@ -1,9 +1,11 @@
 #include "GridPreSelectWindow.h"
 #include "GridSelectWindow.h"
 
-GridPreSelectWindow::GridPreSelectWindow()
+GridPreSelectWindow::GridPreSelectWindow(QWidget *parent) : QMainWindow(parent)
 {
-	setFixedSize(300, 150);
+	// Allocations
+	centralWidget = new QWidget(this);
+	buttonsLayout = new QVBoxLayout(centralWidget);
 
 	// Buttons
 	easyGridsButton = new QPushButton("Easy Grids (5x5) : ~ 5 min");
@@ -12,13 +14,18 @@ GridPreSelectWindow::GridPreSelectWindow()
 	veryHardGridsButton = new QPushButton("Very Hard Grids (15x15) : ~ 1 hour");
 
 	// Layouts
-	buttonsLayout = new QVBoxLayout();
 	buttonsLayout->addWidget(easyGridsButton);
 	buttonsLayout->addWidget(mediumGridsButton);
 	buttonsLayout->addWidget(hardGridsButton);
 	buttonsLayout->addWidget(veryHardGridsButton);
 
-	setLayout(buttonsLayout);
+	// Central Widget
+	centralWidget->setLayout(buttonsLayout);
+	setCentralWidget(centralWidget);
+
+	// General Poperties
+	setAttribute(Qt::WA_DeleteOnClose, true);
+	setFixedSize(300, 150);
 
 	// Signals / Slots
 	QObject::connect(easyGridsButton, &QPushButton::clicked, this, [this] { GridPreSelectWindow::OnPreLoad("Easy"); });
@@ -29,8 +36,8 @@ GridPreSelectWindow::GridPreSelectWindow()
 
 void GridPreSelectWindow::OnPreLoad(const QString & selectedDifficulty)
 {
-	this->close();
-
-	GridSelectWindow *gridSelectWindow = new GridSelectWindow(selectedDifficulty);
+	GridSelectWindow *gridSelectWindow = new GridSelectWindow(this, selectedDifficulty);
+	gridSelectWindow->setWindowModality(Qt::WindowModal);
+	gridSelectWindow->move(this->x() + 10, this->y() + 10);
 	gridSelectWindow->show();
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <fstream>
-#include <string>
 
 
 // Trim spaces of the string passed at both ends

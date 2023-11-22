@@ -1,7 +1,4 @@
 #include "Picross.h"
-#include "FileReadWrite.h"
-#include "Constants.h"
-#include <sstream>
 
 
 std::string TruncatePicrossFileName(const std::string& str) {
@@ -10,16 +7,14 @@ std::string TruncatePicrossFileName(const std::string& str) {
 }
 
 
-Picross::Picross(const std::string & filePath, const std::string & score)
+Picross::Picross(const std::string &filePath, const std::string &score)
 {
-	// Picross Path
+	// Picross path & best score
 	pixFilePath = filePath;
-
-	// Best score
 	bestScore = score;
 
 	// Starting .pix file read...
-	FileStream file(filePath);
+	FileStream file(pixFilePath);
 	std::string strDump = "";	// For consuming attributes with no values
 
 	// Width & Height
@@ -216,7 +211,7 @@ ClueLine Picross::GetClueLine(const LineOrientation dir, const uint idx) const
 	return dir == LineOrientation::row ? clues[idx] : clues[size_t(height) + size_t(idx)];
 }
 
-QLabel * Picross::GenerateClueLabel(const LineOrientation dir, const int idx)
+QLabel *Picross::GenerateClueLabel(const LineOrientation dir, const int idx)
 {
 	const ClueLine clueLine = GetClueLine(dir, idx);
 

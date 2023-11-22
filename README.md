@@ -19,8 +19,9 @@ This project is developped in C++11 (with an high focus on object oriented progr
 
 ## Roadmap
 
-~~- Store/Read best times per picross~~
-- Add back buttons to the GUI
+~~Store/Read best times per picross~~
+~~Make the selection windows modal~~
+- Add "replay window" on completion
 - Adding a french translation
 - Write scores into binary mode
 - Make GUI more adaptive to screens

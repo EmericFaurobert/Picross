@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QWidget>
+#include <QMainWindow>
 #include <QGridLayout>
 #include <QTime>
 #include <QTimer>
 #include "Picross.h"
 
-class PlayWindow : public QWidget
+class PlayWindow : public QMainWindow
 {
 public:
-	PlayWindow(const Picross &picross);
+	PlayWindow(QWidget *parent = nullptr, const Picross &picross = Picross());
 
 private:
 	void InitLayouts();
@@ -30,18 +30,18 @@ private:
 
 private:
 	Picross picross;
-	
-	QHBoxLayout *mainLayout { nullptr };
-	QVBoxLayout *leftLayout { nullptr };
-	QWidget *centralWidget { nullptr };
-	QGridLayout *gridLayout { nullptr };
-	QVBoxLayout *rightLayout { nullptr };
-	
 	uchar selectedColorIdx = 0;
 	std::map<uchar, QPushButton*> colorPicker;
 
-	QTime *chrono { nullptr };
-	QTimer *timer { nullptr };
+	QWidget *centralWidget { nullptr };
+	QWidget *gridWidget { nullptr };
+	QHBoxLayout *mainLayout { nullptr };
+	QVBoxLayout *leftLayout { nullptr };
+	QGridLayout *gridLayout { nullptr };
+	QVBoxLayout *rightLayout { nullptr };
+	
+	QTime chrono = QTime(0, 0, 0);
+	QTimer timer = QTimer(this);
 	QLabel *chronoLabel { nullptr };
 	QPushButton *pauseButton { nullptr };
 };

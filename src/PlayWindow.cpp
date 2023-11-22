@@ -1,12 +1,21 @@
-#include "PlayWindow.h"
 #include <QMessageBox>
-#include "FileReadWrite.h"
-#include "Constants.h"
+#include "PlayWindow.h"
 
-PlayWindow::PlayWindow(const Picross & picx) : picross(picx)
+PlayWindow::PlayWindow(QWidget *parent, const Picross & picx) : QMainWindow(parent), picross(picx)
 {
+	// Allocations
+	centralWidget = new QWidget(this);
+	mainLayout = new QHBoxLayout(centralWidget);
+	leftLayout = new QVBoxLayout(centralWidget);
+	gridLayout = new QGridLayout(centralWidget);
+	rightLayout = new QVBoxLayout(centralWidget);
+
 	// Initialize all the layouts
 	InitLayouts();
+
+	// Central Widget
+	centralWidget->setLayout(mainLayout);
+	setCentralWidget(centralWidget);
 
 	// Initialize the grid section
 	InitGrid();
@@ -17,39 +26,35 @@ PlayWindow::PlayWindow(const Picross & picx) : picross(picx)
 
 	// Initialize the chrono
 	InitChrono();
+
+	// General Poperties
+	setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 void PlayWindow::InitLayouts()
 {
 	// The left chrono layout
-	leftLayout = new QVBoxLayout();
 	leftLayout->setAlignment(Qt::AlignCenter);
 	leftLayout->setContentsMargins(10, 0, 30, 0);
 
 	// The middle picross layout
-	gridLayout = new QGridLayout();
 	gridLayout->setSpacing(0);
-	centralWidget = new QWidget();
-	centralWidget->setLayout(gridLayout);
-
-	QSizePolicy spRetain = centralWidget->sizePolicy();
+	gridWidget = new QWidget(this);
+	gridWidget->setLayout(gridLayout);
+	QSizePolicy spRetain = gridWidget->sizePolicy();
 	spRetain.setRetainSizeWhenHidden(true);
-	centralWidget->setSizePolicy(spRetain);
+	gridWidget->setSizePolicy(spRetain);
 
 	// The right color picker layout
-	rightLayout = new QVBoxLayout();
 	rightLayout->setAlignment(Qt::AlignCenter);
 	rightLayout->setContentsMargins(30, 0, 10, 0);
 	rightLayout->setSpacing(10);
 
 	// The main layout (which contains all others)
-	mainLayout = new QHBoxLayout();
 	mainLayout->setAlignment(Qt::AlignCenter);
 	mainLayout->addLayout(leftLayout);
-	mainLayout->addWidget(centralWidget);
+	mainLayout->addWidget(gridWidget);
 	mainLayout->addLayout(rightLayout);
-
-	setLayout(mainLayout);
 }
 
 void PlayWindow::InitGrid()
@@ -140,33 +145,34 @@ void PlayWindow::InitChrono()
 	pauseButton = new QPushButton("Pause");
 	leftLayout->addWidget(pauseButton);
 
-	chrono = new QTime(0, 0, 0);
-	timer = new QTimer();
-	timer->start(1000);
+	timer.start(1000);
 
-	QObject::connect(timer, &QTimer::timeout, [this] { UpdateChrono(); });
+	QObject::connect(&timer, &QTimer::timeout, [this] { UpdateChrono(); });
 	QObject::connect(pauseButton, &QPushButton::clicked, [this] { StartStopChrono(); });
 }
 
 void PlayWindow::UpdateChrono(const uint sec)
 {
-	*chrono = chrono->addSecs(sec);
-	chronoLabel->setText(chrono->toString("HH:mm:ss"));
+	if (chrono.isValid())
+	{
+		chrono = chrono.addSecs(sec);
+		chronoLabel->setText(chrono.toString("HH:mm:ss"));
+	}
 }
 
 void PlayWindow::StartStopChrono()
 {
-	if (timer->isActive())
+	if (timer.isActive())
 	{
-		timer->stop();
+		timer.stop();
 		pauseButton->setText("Reprendre");
-		centralWidget->setVisible(false);
+		gridWidget->setVisible(false);
 	}
 	else
 	{
-		timer->start();
+		timer.start();
 		pauseButton->setText("Pause");
-		centralWidget->setVisible(true);
+		gridWidget->setVisible(true);
 	}
 }
 
@@ -225,7 +231,7 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 	if (picross.IsCorrect())	// Check if corresponds to solution
 	{
 		// Stop the chrono
-		timer->stop();
+		timer.stop();
 		pauseButton->setDisabled(true);
 
 		// Writing best score...
@@ -238,9 +244,9 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 		if (!oldTime.isValid())
 		{
 			// Append new score at eof if not already existing
-			scoresStream.writeContent(picross.GetFileName() + ": " + chrono->toString("HH:mm:ss").toStdString() + "\n");
+			scoresStream.writeContent(picross.GetFileName() + ": " + chrono.toString("HH:mm:ss").toStdString() + "\n");
 		}
-		else if (*chrono < oldTime)	// Otherwise compare if new one is better	
+		else if (chrono < oldTime)	// Otherwise compare if new one is better	
 		{
 			std::string fileContent = "";
 
@@ -248,7 +254,7 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 			if (scoresStream.readAllContent(fileContent))
 			{
 				std::string oldStrScore = picross.GetFileName() + ": " + oldScore;
-				std::string newStrScore = picross.GetFileName() + ": " + chrono->toString("HH:mm:ss").toStdString();
+				std::string newStrScore = picross.GetFileName() + ": " + chrono.toString("HH:mm:ss").toStdString();
 
 				fileContent.replace(fileContent.find(oldStrScore), oldStrScore.length(), newStrScore);
 
