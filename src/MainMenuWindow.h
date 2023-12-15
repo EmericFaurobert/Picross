@@ -3,10 +3,10 @@
 #include "PlayWindow.h"
 #include "GridPreSelectWindow.h"
 
-class MainMenu : public QMainWindow
+class MainMenuWindow : public QMainWindow
 {
 public:
-	MainMenu(QWidget *parent = nullptr);
+	MainMenuWindow(QWidget *parent = nullptr);
 
 private:
 	void OnPlay();

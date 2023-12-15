@@ -41,15 +41,16 @@ std::string TruncatePicrossFileName(const std::string &str);
 class Picross
 {
 public:
-	Picross(const std::string &filePath = "", const std::string& score = "");
+	Picross(const std::string &filePath = "", const std::string &score = "");
 
 	inline std::string GetFileName() const { return TruncatePicrossFileName(pixFilePath); };
 	inline std::string GetBestScore() { return bestScore; };
 
 	inline uint GetWidth() const { return width; }				// Return the Picross width
 	inline uint GetHeight() const { return height; }			// Return the Picross height
-	inline bool IsColored() const { return isColored; }			// Return if Picross uses multiple colors
+	inline bool IsMultiColored() const { return isMultiColor; }	// Return if Picross uses multiple colors
 
+	inline void SetBestScore(const std::string& newScore) { bestScore = newScore; }
 	void SetCurrentState(const uint row, const uint col, const State sol) { GetCase(row, col).currentState = sol; }
 	void SetCurrentColor(const uint row, const uint col, const uchar colorIdx) { GetCase(row, col).currentColorIdx = colorIdx; }
 
@@ -64,6 +65,7 @@ public:
 	bool IsColorNecessary(const uchar idxColor) const;
 
 	bool IsCorrect();
+	void ResetCurrentStates();
 
 private:
 	inline uint LastRow() const { return height - 1; }	// Return last row index
@@ -90,7 +92,7 @@ private:
 	std::string bestScore = "";
 	uint width { 5 };
 	uint height { 5 };
-	bool isColored { false };
+	bool isMultiColor { false };
 	ColorPalette colorPalette = { { 0, CustomColor::black } };
 	std::vector<Case> grid { size_t(width) * size_t(height) };
 	std::vector<ClueLine> clues { size_t(width) + size_t(height) };

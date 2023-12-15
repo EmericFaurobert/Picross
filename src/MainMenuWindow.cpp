@@ -1,8 +1,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
-#include "MainMenu.h"
+#include "MainMenuWindow.h"
 
-MainMenu::MainMenu(QWidget *parent) : QMainWindow(parent)
+MainMenuWindow::MainMenuWindow(QWidget *parent) : QMainWindow(parent)
 {
 	// Allocations
 	centralWidget = new QWidget(this);
@@ -29,13 +29,13 @@ MainMenu::MainMenu(QWidget *parent) : QMainWindow(parent)
 	setFixedSize(300, 150);
 
 	// Signals / Slots
-	QObject::connect(playButton, &QPushButton::clicked, this, &MainMenu::OnPlay);
-	QObject::connect(loadButton, &QPushButton::clicked, this, &MainMenu::OnLoad);
-	QObject::connect(editButton, &QPushButton::clicked, this, &MainMenu::OnEdit);
-	QObject::connect(rulesButton, &QPushButton::clicked, this, &MainMenu::OnRules);
+	QObject::connect(playButton, &QPushButton::clicked, this, &MainMenuWindow::OnPlay);
+	QObject::connect(loadButton, &QPushButton::clicked, this, &MainMenuWindow::OnLoad);
+	QObject::connect(editButton, &QPushButton::clicked, this, &MainMenuWindow::OnEdit);
+	QObject::connect(rulesButton, &QPushButton::clicked, this, &MainMenuWindow::OnRules);
 }
 
-void MainMenu::OnPlay()
+void MainMenuWindow::OnPlay()
 {
 	GridPreSelectWindow *gridSelector = new GridPreSelectWindow(this);
 	gridSelector->setWindowModality(Qt::WindowModal);
@@ -43,7 +43,7 @@ void MainMenu::OnPlay()
 	gridSelector->show();
 }
 
-void MainMenu::OnLoad() 
+void MainMenuWindow::OnLoad()
 {
 	// QFileDialog seems to be caching stuff, so it's increasing a lot the RAM consumtpion while called...
 	const QString fileName = QFileDialog::getOpenFileName(this, "Open Picross", QString::fromStdString(pixsFolder), "Picross File (*.pix)");
@@ -63,13 +63,13 @@ void MainMenu::OnLoad()
 	}
 }
 
-void MainMenu::OnEdit() 
+void MainMenuWindow::OnEdit()
 {
 	QMessageBox::information(this, "Not yet implemented", "Fonctionnalite en cours de developpement...");
 	// TO DO...
 }
 
-void MainMenu::OnRules() 
+void MainMenuWindow::OnRules()
 {
 	QMessageBox::information(this, "Not yet implemented", "Fonctionnalite en cours de developpement...");
 	// TO DO...

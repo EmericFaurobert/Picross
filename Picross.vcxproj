@@ -22,20 +22,22 @@
     <ClCompile Include="src\FileReadWrite.cpp" />
     <ClCompile Include="src\GridSelectWindow.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\MainMenu.cpp" />
+    <ClCompile Include="src\MainMenuWindow.cpp" />
     <ClCompile Include="src\Picross.cpp" />
     <ClCompile Include="src\PlayWindow.cpp" />
     <ClCompile Include="src\GridPreSelectWindow.cpp" />
+    <ClCompile Include="src\ReplayWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Color.h" />
     <ClInclude Include="src\Constants.h" />
     <ClInclude Include="src\FileReadWrite.h" />
     <ClInclude Include="src\GridSelectWindow.h" />
-    <ClInclude Include="src\MainMenu.h" />
+    <ClInclude Include="src\MainMenuWindow.h" />
     <ClInclude Include="src\Picross.h" />
     <ClInclude Include="src\PlayWindow.h" />
     <ClInclude Include="src\GridPreSelectWindow.h" />
+    <ClInclude Include="src\ReplayWindow.h" />
     <QtMoc Include="src\QRightClickableButton.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

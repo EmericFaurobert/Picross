@@ -42,7 +42,7 @@ Picross::Picross(const std::string &filePath, const std::string &score)
 	file.parseValue("Colored", coloredVal);
 	if (coloredVal == "true" || coloredVal == "yes" || coloredVal == "y")
 	{
-		isColored = true;
+		isMultiColor = true;
 	}
 
 	// ColorPalette
@@ -221,7 +221,7 @@ QLabel *Picross::GenerateClueLabel(const LineOrientation dir, const int idx)
 	for (uint i = 0; i < clueLine.size(); ++i)
 	{
 		// Genrate the corresponding string
-		const QString clueColor = isColored ? clueLine[i].color.ToHex() : defaultCluesLabelColor.ToHex();
+		const QString clueColor = isMultiColor ? clueLine[i].color.ToHex() : defaultCluesLabelColor.ToHex();
 		int clueValue = std::max(clueLine[i].Length(), 0);	// To handle empty clues
 		str += QString("<font color='%1'>").arg(clueColor) + QString::number(clueValue) + "</font>";
 
@@ -247,7 +247,7 @@ bool Picross::IsCorrect()
 				if (GetCurrentState(row, col) != State::checked)
 					return false;
 
-				if(isColored && GetCurrentColor(row, col) != GetExpectedColor(row, col))
+				if(isMultiColor && GetCurrentColor(row, col) != GetExpectedColor(row, col))
 					return false;
 			}
 			else
@@ -259,4 +259,15 @@ bool Picross::IsCorrect()
 	}
 
 	return true;
+}
+
+void Picross::ResetCurrentStates()
+{
+	for (uint row = 0; row < height; ++row)
+	{
+		for (uint col = 0; col < width; ++col)
+		{
+			grid[GetIndex(row, col)].currentState = State::unknow;
+		}
+	}
 }

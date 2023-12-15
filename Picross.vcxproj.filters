@@ -27,7 +27,7 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MainMenu.cpp">
+    <ClCompile Include="src\MainMenuWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Picross.cpp">
@@ -45,6 +45,9 @@
     <ClCompile Include="src\FileReadWrite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ReplayWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Color.h">
@@ -53,7 +56,7 @@
     <ClInclude Include="src\Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\MainMenu.h">
+    <ClInclude Include="src\MainMenuWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Picross.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\FileReadWrite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ReplayWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

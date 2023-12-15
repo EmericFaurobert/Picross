@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include "PlayWindow.h"
+#include "ReplayWindow.h"
 
 PlayWindow::PlayWindow(QWidget *parent, const Picross & picx) : QMainWindow(parent), picross(picx)
 {
@@ -29,6 +30,32 @@ PlayWindow::PlayWindow(QWidget *parent, const Picross & picx) : QMainWindow(pare
 
 	// General Poperties
 	setAttribute(Qt::WA_DeleteOnClose, true);
+}
+
+void PlayWindow::Reset()
+{
+	// Reset the Picross current states
+	picross.ResetCurrentStates();
+
+	// Reset the colorPalette index
+	if (picross.IsMultiColored())
+		ChangeCurrentColor(initColorIdx);
+	else
+		selectedColorIdx = initColorIdx;
+
+	// Reset the chrono & timer
+	chronoLabel->setText("00:00:00");
+	chrono = QTime(0, 0, 0);
+	StartStopChrono();
+
+	// Reset grid default background color
+	for (uint row = 0; row < picross.GetHeight(); ++row)
+	{
+		for (uint col = 0; col < picross.GetWidth(); ++col)
+		{
+			SetBtnStyle(row, col, defaultGridCaseColor);
+		}
+	}
 }
 
 void PlayWindow::InitLayouts()
@@ -98,7 +125,6 @@ void PlayWindow::InitClues()
 void PlayWindow::InitColorPicker()
 {
 	ColorPalette colPal = picross.GetColorPalette();
-	bool isSelectColorInit = false;
 
 	for (ColorPalette::const_iterator it = colPal.begin(); it != colPal.end(); ++it)
 	{
@@ -108,14 +134,14 @@ void PlayWindow::InitColorPicker()
 		if (picross.IsColorNecessary(colorIdx))
 		{
 			// Set up the initial selected color
-			if (!isSelectColorInit)
+			if (initColorIdx == -1)
 			{
+				initColorIdx = colorIdx;
 				selectedColorIdx = colorIdx;
-				isSelectColorInit = true;
 			}
 
 			// Creation of the color picker GUI
-			if (picross.IsColored())
+			if (picross.IsMultiColored())
 			{
 				QPushButton* btn = new QPushButton();
 				colorPicker[colorIdx] = btn;
@@ -129,7 +155,7 @@ void PlayWindow::InitColorPicker()
 	}
 
 	// Selected color GUI highlight
-	if (picross.IsColored())
+	if (picross.IsMultiColored())
 	{
 		colorPicker[selectedColorIdx]->setStyleSheet(colorPicker[selectedColorIdx]->styleSheet() + QString("border: 3px solid %1;").arg(caseColorPickerBorder.ToHex()));
 	}
@@ -232,7 +258,6 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 	{
 		// Stop the chrono
 		timer.stop();
-		pauseButton->setDisabled(true);
 
 		// Writing best score...
 		const std::string  scoresFilePath = pixsFolder + scoresFileName;
@@ -241,20 +266,27 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 		std::string oldScore = picross.GetBestScore();
 		QTime oldTime = QTime::fromString(QString::fromStdString(oldScore), "HH:mm:ss");
 
+		std::string newScore = chrono.toString("HH:mm:ss").toStdString();
+		bool bestScoreBeaten = false;
+
+		// If no already existing score...
 		if (!oldTime.isValid())
 		{
-			// Append new score at eof if not already existing
-			scoresStream.writeContent(picross.GetFileName() + ": " + chrono.toString("HH:mm:ss").toStdString() + "\n");
+			picross.SetBestScore(newScore);
+			scoresStream.writeContent(picross.GetFileName() + ": " + newScore + "\n");
 		}
 		else if (chrono < oldTime)	// Otherwise compare if new one is better	
 		{
-			std::string fileContent = "";
+			bestScoreBeaten = true;
+			picross.SetBestScore(newScore);
 
 			// Replace and rewrite all file content
+			std::string fileContent = "";
+
 			if (scoresStream.readAllContent(fileContent))
 			{
 				std::string oldStrScore = picross.GetFileName() + ": " + oldScore;
-				std::string newStrScore = picross.GetFileName() + ": " + chrono.toString("HH:mm:ss").toStdString();
+				std::string newStrScore = picross.GetFileName() + ": " + newScore;
 
 				fileContent.replace(fileContent.find(oldStrScore), oldStrScore.length(), newStrScore);
 
@@ -263,9 +295,13 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 			}
 		}
 
-		// Print congrats & Show solution
-		QMessageBox::information(this, "Fini", "Vous avez gagne !");
+		// Show solution (including background)
 		ShowSolution();
+
+		// Open the replay window
+		ReplayWindow *replayWindow = new ReplayWindow(this, QString::fromStdString(newScore), bestScoreBeaten);
+		replayWindow->setWindowModality(Qt::WindowModal);
+		replayWindow->show();
 	}	
 }
 
@@ -286,7 +322,6 @@ void PlayWindow::ShowSolution()
 		for (uint col = 0; col < picross.GetWidth(); ++col)
 		{
 			SetBtnStyle(row, col, picross.GetExpectedColor(row, col));
-			picross.GetBtn(row, col)->setDisabled(true);
 		}
 	}
 }

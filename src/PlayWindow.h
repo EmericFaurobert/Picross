@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QGridLayout>
+#include <QLayout>
 #include <QTime>
 #include <QTimer>
 #include "Picross.h"
@@ -10,6 +10,7 @@ class PlayWindow : public QMainWindow
 {
 public:
 	PlayWindow(QWidget *parent = nullptr, const Picross &picross = Picross());
+	void Reset();
 
 private:
 	void InitLayouts();
@@ -30,6 +31,7 @@ private:
 
 private:
 	Picross picross;
+	int initColorIdx = -1;
 	uchar selectedColorIdx = 0;
 	std::map<uchar, QPushButton*> colorPicker;
 
