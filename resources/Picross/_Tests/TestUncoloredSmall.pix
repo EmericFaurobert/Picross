@@ -1,0 +1,19 @@
+Width: 3
+Height: 4
+Colored: no
+
+ColorPalette: 2
+0: 0 0 0
+1: 255 255 255
+
+StateGrid:
+---
+-X-
+-X-
+---
+
+ColorGrid:
+1 1 1
+1 0 1
+1 0 1
+1 1 1
