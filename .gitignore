@@ -1,4 +1,4 @@
-.vs
 build
+.vs
+*.user
 *\scores.txt
-*.drawio

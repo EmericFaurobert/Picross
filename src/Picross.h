@@ -35,22 +35,22 @@ using ColorPalette = std::map<uchar, Color>;	// Collection of colors used for a 
 
 
 // Return a truncated Picross filepath (without Picross folder nor extension)
-std::string TruncatePicrossFileName(const std::string &str);
+std::wstring TruncatePicrossFileName(const std::wstring &str);
 
 
 class Picross
 {
 public:
-	Picross(const std::string &filePath = "", const std::string &score = "");
+	Picross(const std::wstring &filePath = L"", const std::wstring &score = L"");
 
-	inline std::string GetFileName() const { return TruncatePicrossFileName(pixFilePath); };
-	inline std::string GetBestScore() { return bestScore; };
+	inline std::wstring GetFileName() const { return TruncatePicrossFileName(pixFilePath); };
+	inline std::wstring GetBestScore() { return bestScore; };
 
 	inline uint GetWidth() const { return width; }				// Return the Picross width
 	inline uint GetHeight() const { return height; }			// Return the Picross height
 	inline bool IsMultiColored() const { return isMultiColor; }	// Return if Picross uses multiple colors
 
-	inline void SetBestScore(const std::string& newScore) { bestScore = newScore; }
+	inline void SetBestScore(const std::wstring& newScore) { bestScore = newScore; }
 	void SetCurrentState(const uint row, const uint col, const State sol) { GetCase(row, col).currentState = sol; }
 	void SetCurrentColor(const uint row, const uint col, const uchar colorIdx) { GetCase(row, col).currentColorIdx = colorIdx; }
 
@@ -88,8 +88,8 @@ private:
 	uchar GetCurrentColorIdx(const uint row, const uint col) const { return GetCase(row, col).currentColorIdx; };
 
 private:
-	std::string pixFilePath = "";
-	std::string bestScore = "";
+	std::wstring pixFilePath = L"";
+	std::wstring bestScore = L"";
 	uint width { 5 };
 	uint height { 5 };
 	bool isMultiColor { false };

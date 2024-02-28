@@ -2,12 +2,12 @@
 #include <algorithm>
 #include "FileReadWrite.h"
 
-FileStream::FileStream(const std::string & filepath, std::ios_base::openmode mode)
+FileStream::FileStream(const std::wstring & filepath, std::ios_base::openmode mode)
 {
-	file = std::fstream(filepath, mode);
+	file = std::wfstream(filepath, mode);
 }
 
-bool FileStream::parseValue(const std::string & attrName, std::string & val)
+bool FileStream::parseValue(const std::wstring & attrName, std::wstring & val)
 {
 	if (file.is_open())
 	{		
@@ -15,19 +15,19 @@ bool FileStream::parseValue(const std::string & attrName, std::string & val)
 		file.clear();
 		file.seekg(0, file.beg);
 
-		std::string searchedAttr = attrName;
+		std::wstring searchedAttr = attrName;
 		TrimBothStringEnds(searchedAttr);																// Prevent space sensitive
 		std::transform(searchedAttr.begin(), searchedAttr.end(), searchedAttr.begin(), std::tolower);	// Prevent case sensitive
 
 		int currentPos = file.beg;
-		std::string currentFileLine = "";
+		std::wstring currentFileLine = L"";
 
 		while (std::getline(file, currentFileLine))
 		{
-			std::stringstream sstream(currentFileLine);
-			std::string currentFileWord = "";
+			std::wstringstream sstream(currentFileLine);
+			std::wstring currentFileWord = L"";
 
-			std::getline(sstream, currentFileWord, ':');	// Parse ':' delimitor
+			std::getline(sstream, currentFileWord, L':');	// Parse ':' delimitor
 			TrimBothStringEnds(currentFileWord);			// Prevent space sensitive
 			std::transform(currentFileWord.begin(), currentFileWord.end(), currentFileWord.begin(), std::tolower);	// Prevent case sensitive
 
@@ -44,7 +44,7 @@ bool FileStream::parseValue(const std::string & attrName, std::string & val)
 	return false;
 };
 
-bool FileStream::readNextLine(std::string & str)
+bool FileStream::readNextLine(std::wstring & str)
 {
 	if (file.is_open())
 	{
@@ -62,7 +62,7 @@ bool FileStream::readNextLine(std::string & str)
 	return false;
 }
 
-bool FileStream::readAllContent(std::string & str)
+bool FileStream::readAllContent(std::wstring & str)
 {
 	if (file.is_open())
 	{
@@ -71,7 +71,7 @@ bool FileStream::readAllContent(std::string & str)
 		file.seekg(0, file.beg);
 
 		// Read whole content
-		std::ostringstream outStringStream;
+		std::wostringstream outStringStream;
 		outStringStream << file.rdbuf();
 		str = outStringStream.str();
 
@@ -81,7 +81,7 @@ bool FileStream::readAllContent(std::string & str)
 	return false;
 }
 
-bool FileStream::writeContent(const std::string & str)
+bool FileStream::writeContent(const std::wstring & str)
 {
 	if (file.is_open())
 	{

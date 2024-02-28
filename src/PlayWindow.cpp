@@ -260,20 +260,20 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 		timer.stop();
 
 		// Writing best score...
-		const std::string  scoresFilePath = pixsFolder + scoresFileName;
+		const std::wstring  scoresFilePath = pixsFolder + scoresFileName;
 		FileStream scoresStream(scoresFilePath, std::fstream::in | std::fstream::out | std::fstream::app | std::fstream::binary);
 
-		std::string oldScore = picross.GetBestScore();
-		QTime oldTime = QTime::fromString(QString::fromStdString(oldScore), "HH:mm:ss");
+		std::wstring oldScore = picross.GetBestScore();
+		QTime oldTime = QTime::fromString(QString::fromStdWString(oldScore), "HH:mm:ss");
 
-		std::string newScore = chrono.toString("HH:mm:ss").toStdString();
+		std::wstring newScore = chrono.toString("HH:mm:ss").toStdWString();
 		bool bestScoreBeaten = false;
 
 		// If no already existing score...
 		if (!oldTime.isValid())
 		{
 			picross.SetBestScore(newScore);
-			scoresStream.writeContent(picross.GetFileName() + ": " + newScore + "\n");
+			scoresStream.writeContent(picross.GetFileName() + L": " + newScore + L"\n");
 		}
 		else if (chrono < oldTime)	// Otherwise compare if new one is better	
 		{
@@ -281,12 +281,12 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 			picross.SetBestScore(newScore);
 
 			// Replace and rewrite all file content
-			std::string fileContent = "";
+			std::wstring fileContent = L"";
 
 			if (scoresStream.readAllContent(fileContent))
 			{
-				std::string oldStrScore = picross.GetFileName() + ": " + oldScore;
-				std::string newStrScore = picross.GetFileName() + ": " + newScore;
+				std::wstring oldStrScore = picross.GetFileName() + L": " + oldScore;
+				std::wstring newStrScore = picross.GetFileName() + L": " + newScore;
 
 				fileContent.replace(fileContent.find(oldStrScore), oldStrScore.length(), newStrScore);
 
@@ -299,7 +299,7 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 		ShowSolution();
 
 		// Open the replay window
-		ReplayWindow *replayWindow = new ReplayWindow(this, QString::fromStdString(newScore), bestScoreBeaten);
+		ReplayWindow *replayWindow = new ReplayWindow(this, QString::fromStdWString(newScore), bestScoreBeaten);
 		replayWindow->setWindowModality(Qt::WindowModal);
 		replayWindow->show();
 	}	

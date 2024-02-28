@@ -46,17 +46,17 @@ void MainMenuWindow::OnPlay()
 void MainMenuWindow::OnLoad()
 {
 	// QFileDialog seems to be caching stuff, so it's increasing a lot the RAM consumtpion while called...
-	const QString fileName = QFileDialog::getOpenFileName(this, "Open Picross", QString::fromStdString(pixsFolder), "Picross File (*.pix)");
+	const QString fileName = QFileDialog::getOpenFileName(this, "Open Picross", QString::fromStdWString(pixsFolder), "Picross File (*.pix)");
 
 	if (!fileName.isEmpty())
 	{
-		std::string currentScore = "";
-		const std::string truncedFileName = TruncatePicrossFileName(fileName.toStdString());
+		std::wstring currentScore = L"";
+		const std::wstring truncedFileName = TruncatePicrossFileName(fileName.toStdWString());
 
 		FileStream scoresStream(pixsFolder + scoresFileName, std::fstream::in);
 		scoresStream.parseValue(truncedFileName, currentScore);
 
-		PlayWindow* grid = new PlayWindow(nullptr, Picross(fileName.toStdString(), currentScore));
+		PlayWindow* grid = new PlayWindow(nullptr, Picross(fileName.toStdWString(), currentScore));
 		grid->show();
 
 		this->close();

@@ -1,13 +1,13 @@
 #include "Picross.h"
 
 
-std::string TruncatePicrossFileName(const std::string& str) {
+std::wstring TruncatePicrossFileName(const std::wstring& str) {
 	size_t startOffset = str.find(pixsFolder) + pixsFolder.size();
 	return str.substr(startOffset, str.size() - startOffset - pixsExtension.size());
 }
 
 
-Picross::Picross(const std::string &filePath, const std::string &score)
+Picross::Picross(const std::wstring &filePath, const std::wstring &score)
 {
 	// Picross path & best score
 	pixFilePath = filePath;
@@ -15,14 +15,14 @@ Picross::Picross(const std::string &filePath, const std::string &score)
 
 	// Starting .pix file read...
 	FileStream file(pixFilePath);
-	std::string strDump = "";	// For consuming attributes with no values
+	std::wstring strDump = L"";	// For consuming attributes with no values
 
 	// Width & Height
-	std::string widthVal = "", heightVal = "";
-	file.parseValue("Width", widthVal);
-	file.parseValue("Height", heightVal);
+	std::wstring widthVal = L"", heightVal = L"";
+	file.parseValue(L"Width", widthVal);
+	file.parseValue(L"Height", heightVal);
 
-	if (widthVal != "" && heightVal != "")
+	if (widthVal != L"" && heightVal != L"")
 	{
 		width = std::min(std::stoi(widthVal), UCHAR_MAX);
 		height = std::min(std::stoi(heightVal), UCHAR_MAX);
@@ -38,27 +38,27 @@ Picross::Picross(const std::string &filePath, const std::string &score)
 	}
 
 	// Multi color grid
-	std::string coloredVal = "";
-	file.parseValue("Colored", coloredVal);
-	if (coloredVal == "true" || coloredVal == "yes" || coloredVal == "y")
+	std::wstring coloredVal = L"";
+	file.parseValue(L"Colored", coloredVal);
+	if (coloredVal == L"true" || coloredVal == L"yes" || coloredVal == L"y")
 	{
 		isMultiColor = true;
 	}
 
 	// ColorPalette
-	std::string nbColorsVal = "";
-	file.parseValue("ColorPalette", nbColorsVal);
-	if (nbColorsVal != "")
+	std::wstring nbColorsVal = L"";
+	file.parseValue(L"ColorPalette", nbColorsVal);
+	if (nbColorsVal != L"")
 	{
 		int nbColors = std::min(std::stoi(nbColorsVal), UCHAR_MAX);
 		assert(("Too much colors defined", nbColors <= 12));	// ColorPalette is too large for the GUI
 
 		for (int i = 0; i < nbColors; ++i)
 		{
-			std::string paletteLine = "";
+			std::wstring paletteLine = L"";
 			if (file.readNextLine(paletteLine))
 			{
-				std::stringstream sstream(paletteLine);
+				std::wstringstream sstream(paletteLine);
 				uint idx = 0, red = 0, green = 0, blue = 0;
 
 				sstream >> idx >> strDump >> red >> green >> blue;
@@ -68,13 +68,13 @@ Picross::Picross(const std::string &filePath, const std::string &score)
 	}
 
 	// States grid
-	if (file.parseValue("StateGrid", strDump))
+	if (file.parseValue(L"StateGrid", strDump))
 	{
-		std::string statesLine = "";
+		std::wstring statesLine = L"";
 
 		for (uint row = 0; row < height; ++row)
 		{
-			if (file.readNextLine(statesLine) && statesLine != "")
+			if (file.readNextLine(statesLine) && statesLine != L"")
 			{
 				for (uint col = 0; col < width; ++col)
 				{
@@ -95,15 +95,15 @@ Picross::Picross(const std::string &filePath, const std::string &score)
 		assert(("No grid states found !", false));	// No grid states read
 
 	// Color grid
-	if (file.parseValue("ColorGrid", strDump))
+	if (file.parseValue(L"ColorGrid", strDump))
 	{
-		std::string colorsLine = "";
+		std::wstring colorsLine = L"";
 
 		for (uint row = 0; row < height; ++row)
 		{
 			if (file.readNextLine(colorsLine))
 			{
-				std::stringstream sstream(colorsLine);
+				std::wstringstream sstream(colorsLine);
 
 				for (uint col = 0; col < width; ++col)
 				{

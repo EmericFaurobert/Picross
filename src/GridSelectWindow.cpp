@@ -17,7 +17,7 @@ GridSelectWindow::GridSelectWindow(QWidget *parent, const QString &folderName) :
 	pGridsTable->setEditTriggers(QTableWidget::NoEditTriggers);
 
 	// Table Values
-	gridsFolderPath = QString::fromStdString(pixsFolder) + folderName;
+	gridsFolderPath = QString::fromStdWString(pixsFolder) + folderName;
 	const QDir directory(gridsFolderPath);
 	const QStringList gridsName = directory.entryList(QStringList() << "*.pix" << "*.PIX" , QDir::Files);
 	pGridsTable->setRowCount(gridsName.size());
@@ -28,15 +28,15 @@ GridSelectWindow::GridSelectWindow(QWidget *parent, const QString &folderName) :
 		pGridsTable->setItem(i, 0, new QTableWidgetItem(gridName));
 
 		// Best score
-		const std::string  scoresFilePath = pixsFolder + scoresFileName;
+		const std::wstring  scoresFilePath = pixsFolder + scoresFileName;
 		FileStream scoresStream(scoresFilePath, std::fstream::in);
 
-		std::string currentScore = "";
-		std::string fileName = folderName.toStdString() + "/" + gridName.toStdString();
+		std::wstring currentScore = L"";
+		std::wstring fileName = folderName.toStdWString() + L"/" + gridName.toStdWString();
 
 		if (scoresStream.parseValue(fileName, currentScore))
 		{
-			pGridsTable->setItem(i, 1, new QTableWidgetItem(QString::fromStdString(currentScore)));
+			pGridsTable->setItem(i, 1, new QTableWidgetItem(QString::fromStdWString(currentScore)));
 		}
 		else
 		{
@@ -62,8 +62,8 @@ GridSelectWindow::GridSelectWindow(QWidget *parent, const QString &folderName) :
 
 void GridSelectWindow::OnLoad(const QString & gridName, const QString & gridScore)
 {
-	std::string gridPath = QString(gridsFolderPath + "/" + gridName).toStdString() + pixsExtension;
-	PlayWindow *grid = new PlayWindow(nullptr, Picross(gridPath, gridScore.toStdString()));
+	std::wstring gridPath = QString(gridsFolderPath + "/" + gridName).toStdWString() + pixsExtension;
+	PlayWindow *grid = new PlayWindow(nullptr, Picross(gridPath, gridScore.toStdWString()));
 	grid->show();
 
 	parentWidget()->parentWidget()->close();	// Deleting MainMenu window...

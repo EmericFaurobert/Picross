@@ -3,9 +3,9 @@
 #include "Color.h"
 
 // Paths
-const std::string pixsFolder= "resources/Picross/";
-const std::string pixsExtension = ".pix";
-const std::string scoresFileName = "scores.txt";
+const std::wstring pixsFolder= L"resources/Picross/";
+const std::wstring pixsExtension = L".pix";
+const std::wstring scoresFileName = L"scores.txt";
 
 // Colors
 const Color defaultGridCaseColor(224, 224, 224);	// Grid background color
