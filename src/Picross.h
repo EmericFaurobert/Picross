@@ -51,6 +51,7 @@ public:
 	inline bool IsMultiColored() const { return isMultiColor; }	// Return if Picross uses multiple colors
 
 	inline void SetBestScore(const std::wstring& newScore) { bestScore = newScore; }
+	State GetCurrentState(const uint row, const uint col) const { return GetCase(row, col).currentState; }
 	void SetCurrentState(const uint row, const uint col, const State sol) { GetCase(row, col).currentState = sol; }
 	void SetCurrentColor(const uint row, const uint col, const uchar colorIdx) { GetCase(row, col).currentColorIdx = colorIdx; }
 
@@ -75,10 +76,9 @@ private:
 	Case& GetCase(const uint row, const uint col) { return grid[GetIndex(row, col)]; }
 	const Case& GetCase(const uint row, const uint col) const { return grid[GetIndex(row, col)]; }
 
+	State GetExpectedState(const uint row, const uint col) const { return GetCase(row, col).expectedState; }
 	void SetExpectedState(const uint row, const uint col, const State exp) { GetCase(row, col).expectedState = exp; }
 	void SetExpectedColor(const uint row, const uint col, const uchar colorIdx) { GetCase(row, col).expectedColorIdx = colorIdx; }
-	State GetExpectedState(const uint row, const uint col) const { return GetCase(row, col).expectedState; }
-	State GetCurrentState(const uint row, const uint col) const { return GetCase(row, col).currentState; }
 	
 	void GenerateClues();
 	ClueLine GetClueLine(const LineOrientation dir, const uint idx) const;

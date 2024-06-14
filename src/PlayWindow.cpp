@@ -249,9 +249,17 @@ void PlayWindow::ClickOnCase(const uint row, const uint col, const Qt::MouseButt
 	}
 	else if (click == Qt::RightButton)	// Mark as empty case
 	{
-		picross.SetCurrentState(row, col, State::unchecked);
 		SetBtnStyle(row, col, defaultGridCaseColor);
-		SetBtnBackground(row, col, "resources/Icons/BlackCross.svg");
+
+		if (picross.GetCurrentState(row, col) == State::unchecked)
+		{
+			picross.SetCurrentState(row, col, State::unknow);
+		}
+		else	// unknow or checked
+		{
+			picross.SetCurrentState(row, col, State::unchecked);
+			SetBtnBackground(row, col, "resources/Icons/BlackCross.svg");
+		}
 	}
 
 	if (picross.IsCorrect())	// Check if corresponds to solution
