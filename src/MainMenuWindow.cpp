@@ -10,9 +10,16 @@ MainMenuWindow::MainMenuWindow(QWidget *parent) : QMainWindow(parent)
 
 	// Buttons
 	playButton = new QPushButton("Jouer");
+	playButton->setMaximumHeight(40);
+
 	loadButton = new QPushButton("Charger");
+	loadButton->setMaximumHeight(25);
+
 	editButton = new QPushButton("Creer");
+	editButton->setMaximumHeight(25);
+
 	rulesButton = new QPushButton("Tuto");
+	rulesButton->setMaximumHeight(25);
 
 	// Layouts
 	mainLayout->addWidget(playButton);
@@ -26,7 +33,7 @@ MainMenuWindow::MainMenuWindow(QWidget *parent) : QMainWindow(parent)
 
 	// General Poperties
 	setAttribute(Qt::WA_DeleteOnClose, true);
-	setFixedSize(300, 150);
+	setFixedSize(300, 180);
 
 	// Signals / Slots
 	QObject::connect(playButton, &QPushButton::clicked, this, &MainMenuWindow::OnPlay);
